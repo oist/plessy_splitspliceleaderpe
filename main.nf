@@ -1,11 +1,11 @@
 #!/usr/bin/env nextflow
 /*
 ========================================================================================
-    nf-core/splitspliceleaderpe
+    draft/splitspliceleaderpe
 ========================================================================================
-    Github : https://github.com/nf-core/splitspliceleaderpe
-    Website: https://nf-co.re/splitspliceleaderpe
-    Slack  : https://nfcore.slack.com/channels/splitspliceleaderpe
+    Github : https://github.com/oist/plessy_splitspliceleaderpe
+    Website: https://example.com/splitspliceleaderpe
+    Slack  : https://example.com/channels/splitspliceleaderpe
 ----------------------------------------------------------------------------------------
 */
 
@@ -36,7 +36,7 @@ WorkflowMain.initialise(workflow, params, log)
 include { SPLITSPLICELEADERPE } from './workflows/splitspliceleaderpe'
 
 //
-// WORKFLOW: Run main nf-core/splitspliceleaderpe analysis pipeline
+// WORKFLOW: Run main draft/splitspliceleaderpe analysis pipeline
 //
 workflow NFCORE_SPLITSPLICELEADERPE {
     SPLITSPLICELEADERPE ()
