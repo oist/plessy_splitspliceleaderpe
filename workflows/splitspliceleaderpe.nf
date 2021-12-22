@@ -10,7 +10,7 @@ def summary_params = NfcoreSchema.paramsSummaryMap(workflow, params)
 WorkflowSplitspliceleaderpe.initialise(params, log)
 
 // Check input path parameters to see if they exist
-def checkPathParamList = [ params.input, params.multiqc_config, params.fasta
+def checkPathParamList = [ params.input, params.multiqc_config
                          , params.arch, params.rrna ]
 for (param in checkPathParamList) { if (param) { file(param, checkIfExists: true) } }
 
@@ -88,7 +88,7 @@ workflow SPLITSPLICELEADERPE {
     TAGDUST_SPLITSLPE (
         INPUT_CHECK.out.reads,
         ch_arch,
-        ch_rrrna
+        ch_rrna
     )
     ch_versions = ch_versions.mix(TAGDUST_SPLITSLPE.out.versions.first())
 
