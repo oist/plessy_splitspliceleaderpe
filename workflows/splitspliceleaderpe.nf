@@ -9,13 +9,15 @@ def summary_params = NfcoreSchema.paramsSummaryMap(workflow, params)
 // Validate input parameters
 WorkflowSplitspliceleaderpe.initialise(params, log)
 
-// TODO nf-core: Add all file path parameters for the pipeline to the list below
 // Check input path parameters to see if they exist
-def checkPathParamList = [ params.input, params.multiqc_config, params.fasta ]
+def checkPathParamList = [ params.input, params.multiqc_config, params.fasta
+                         , params.arch, params.rrna ]
 for (param in checkPathParamList) { if (param) { file(param, checkIfExists: true) } }
 
 // Check mandatory parameters
 if (params.input) { ch_input = file(params.input) } else { exit 1, 'Input samplesheet not specified!' }
+if (params.arch)  { ch_arch  = file(params.arch)  } else { exit 1, 'TagDust architecture file not specified!' }
+if (params.rrna)  { ch_rrna  = file(params.rrna)  } else { exit 1, 'rRNA file not specified!' }
 
 /*
 ========================================================================================
@@ -49,6 +51,7 @@ include { INPUT_CHECK } from '../subworkflows/local/input_check'
 include { FASTQC                      } from '../modules/nf-core/modules/fastqc/main'
 include { MULTIQC                     } from '../modules/nf-core/modules/multiqc/main'
 include { CUSTOM_DUMPSOFTWAREVERSIONS } from '../modules/nf-core/modules/custom/dumpsoftwareversions/main'
+include { TAGDUST_SPLITSLPE           } from '../modules/local/tagdust/splitslpe.nf'
 
 /*
 ========================================================================================
@@ -78,6 +81,16 @@ workflow SPLITSPLICELEADERPE {
         INPUT_CHECK.out.reads
     )
     ch_versions = ch_versions.mix(FASTQC.out.versions.first())
+
+    //
+    // MODULE: Run TagDust
+    //
+    TAGDUST_SPLITSLPE (
+        INPUT_CHECK.out.reads,
+        ch_arch,
+        ch_rrrna
+    )
+    ch_versions = ch_versions.mix(TAGDUST_SPLITSLPE.out.versions.first())
 
     CUSTOM_DUMPSOFTWAREVERSIONS (
         ch_versions.unique().collectFile(name: 'collated_versions.yml')
