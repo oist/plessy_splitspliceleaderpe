@@ -21,9 +21,17 @@ process TAGDUST_SPLITSLPE {
     def args = task.ext.args ?: ''
     def prefix = task.ext.prefix ?: "${meta.id}"
     """
-    # Remove trailing \1s and \2s ...
-    gzip -cdf ${reads[0]} | sed -e 1~4's,/1\$,,' | gzip > __clean__read1.fa.gz
-    gzip -cdf ${reads[1]} | sed -e 1~4's,/2\$,,' | gzip > __clean__read2.fa.gz
+    # Remove trailing \1s and \2s only when needed
+    # Note that 'zcat foo | head' would trigger pipefail
+    # and cause the 'else' clause to be always selected.
+    if head -n1 <(zcat ${reads[0]}) | grep -cq '/1\$'
+    then
+        gzip -cdf ${reads[0]} | sed -e 1~4's,/1\$,,' | gzip > __clean__read1.fq.gz
+        gzip -cdf ${reads[1]} | sed -e 1~4's,/2\$,,' | gzip > __clean__read2.fq.gz
+    else
+        ln -s ${reads[0]} __clean__read1.fq.gz
+        ln -s ${reads[1]} __clean__read2.fq.gz
+    fi
 
     # Then run TagDust
     tagdust                      \\
@@ -31,8 +39,8 @@ process TAGDUST_SPLITSLPE {
         -ref  $rrna              \\
         -arch $arch              \\
         -o    ${prefix}_SL       \\
-        __clean__read1.fa.gz     \\
-        __clean__read2.fa.gz
+        __clean__read1.fq.gz     \\
+        __clean__read2.fq.gz
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
