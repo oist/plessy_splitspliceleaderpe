@@ -52,6 +52,8 @@ include { FASTQC                      } from '../modules/nf-core/modules/fastqc/
 include { MULTIQC                     } from '../modules/nf-core/modules/multiqc/main'
 include { CUSTOM_DUMPSOFTWAREVERSIONS } from '../modules/nf-core/modules/custom/dumpsoftwareversions/main'
 include { TAGDUST_SPLITSLPE           } from '../modules/local/tagdust/splitslpe.nf'
+include { TAGDUST_REFREMPE as TAGDUST_REFREMPE_SL   } from '../modules/local/tagdust/removeref.nf'
+include { TAGDUST_REFREMPE as TAGDUST_REFREMPE_NOSL } from '../modules/local/tagdust/removeref.nf'
 
 /*
 ========================================================================================
@@ -87,10 +89,29 @@ workflow SPLITSPLICELEADERPE {
     //
     TAGDUST_SPLITSLPE (
         INPUT_CHECK.out.reads,
+        ch_arch
+    )
+    ch_versions = ch_versions.mix(TAGDUST_SPLITSLPE.out.versions.first())
+
+    //
+    // MODULE: Remove rRNA with TagDust
+    //
+    TAGDUST_REFREMPE_SL (
+        TAGDUST_SPLITSLPE.out.withSL_FASTQ,
         ch_arch,
         ch_rrna
     )
-    ch_versions = ch_versions.mix(TAGDUST_SPLITSLPE.out.versions.first())
+    ch_versions = ch_versions.mix(TAGDUST_REFREMPE_SL.out.versions.first())
+
+    //
+    // MODULE: Remove rRNA with TagDust
+    //
+    TAGDUST_REFREMPE_NOSL (
+        TAGDUST_SPLITSLPE.out.noSL_FASTQ,
+        ch_arch,
+        ch_rrna
+    )
+    ch_versions = ch_versions.mix(TAGDUST_REFREMPE_NOSL.out.versions.first())
 
     CUSTOM_DUMPSOFTWAREVERSIONS (
         ch_versions.unique().collectFile(name: 'collated_versions.yml')

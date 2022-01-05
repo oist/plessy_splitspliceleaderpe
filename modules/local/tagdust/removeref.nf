@@ -1,4 +1,4 @@
-process TAGDUST_SPLITSLPE {
+process TAGDUST_REFREMPE {
     tag "$meta.id"
     label 'process_high'
     
@@ -7,12 +7,13 @@ process TAGDUST_SPLITSLPE {
     input:
     tuple val(meta), path(reads)
     path(arch)
+    path(rrna)
 
     output:
-    tuple val(meta), path ("*_SL_READ*.fq.gz"),    emit: withSL_FASTQ
-    tuple val(meta), path ("*_SL_un_READ*.fq.gz"), emit: noSL_FASTQ
-    path "*_logfile.txt",                          emit: TagDust2LogFile
-    path "versions.yml",                           emit: versions
+    path "*_REFREM_READ1.fq.gz",  emit: REFREM_R1_FASTQ
+    path "*_REFREM_READ2.fq.gz",  emit: REFREM_R2_FASTQ
+    path "*_logfile.txt",         emit: TagDust2LogFile
+    path "versions.yml",          emit: versions
 
     script:
     def args = task.ext.args ?: ''
@@ -33,8 +34,9 @@ process TAGDUST_SPLITSLPE {
     # Then run TagDust
     tagdust                      \\
         -t    $task.cpus         \\
+        -ref  $rrna              \\
         -arch $arch              \\
-        -o    ${prefix}_SL       \\
+        -o    ${prefix}_REFREM   \\
         __clean__read1.fq.gz     \\
         __clean__read2.fq.gz
 
