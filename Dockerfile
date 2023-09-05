@@ -1,4 +1,4 @@
-FROM debian:12
+FROM debian:11
 LABEL authors="charles.plessy@oist.jp"\
       description="Docker image containing all requirements for the nf-core TagDust2 module"
 
@@ -14,4 +14,5 @@ RUN wget https://downloads.sourceforge.net/project/tagdust/tagdust-2.33.tar.gz &
     tar xvfz tagdust-2.33.tar.gz
 WORKDIR /home/tagdust-2.33
 RUN ./configure --prefix=/usr && make && make check && make install
+RUN apt -y purge build-essential wget && apt autoremove
 RUN apt -y purge apt --allow-remove-essential --auto-remove
