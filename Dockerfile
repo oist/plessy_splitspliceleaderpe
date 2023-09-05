@@ -14,5 +14,5 @@ RUN wget https://downloads.sourceforge.net/project/tagdust/tagdust-2.33.tar.gz &
     tar xvfz tagdust-2.33.tar.gz
 WORKDIR /home/tagdust-2.33
 RUN ./configure --prefix=/usr && make && make check && make install
-RUN apt -y purge build-essential wget && apt autoremove
+RUN apt -y purge build-essential wget && apt -y autoremove
 RUN apt -y purge apt --allow-remove-essential --auto-remove
