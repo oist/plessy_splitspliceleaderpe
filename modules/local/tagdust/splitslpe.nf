@@ -2,7 +2,7 @@ process TAGDUST_SPLITSLPE {
     tag "$meta.id"
     label 'process_high'
     
-    container = 'cagescan/tagdust2:20211222'
+    container = 'https://ghcr.io/oist/plessy_splitspliceleaderpe'
 
     input:
     tuple val(meta), path(reads)
