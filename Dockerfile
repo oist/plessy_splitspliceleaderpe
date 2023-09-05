@@ -1,4 +1,4 @@
-FROM debian:11
+FROM debian:10
 LABEL authors="charles.plessy@oist.jp"\
       description="Docker image containing all requirements for the nf-core TagDust2 module"
 
