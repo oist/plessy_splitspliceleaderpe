@@ -14,3 +14,14 @@ tagdust -1 R:N
 ## Pipeline summary
 
 TBD
+
+## Pipeline test
+
+The pipeline can be tested with a command like:
+
+```
+nextflow run ./main.nf --input input.test.csv -profile yourProfile -w path/to/your/scratch/area --arch SL.Oikopleura_diocia.arch --rrna OKIrRNA.fa
+```
+
+The main output files are in `results/tagdust/`.  Reads with no splice leader
+are saved in `*_SL_un_READ*` and reads with splice leader in `*_SL_READ*`.
